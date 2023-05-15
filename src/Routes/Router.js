@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image } from 'react-native'
+import { Image, Button } from 'react-native'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import CoundownDay from '../screens/CoundownDay';
@@ -8,8 +8,11 @@ import PersonalCenter from '../screens/PersonalCenter';
 import SelfStudyRoom from '../screens/SelfStudyRoom';
 import AddScore from '../pages/AddScore';
 import AddVolunteer from '../pages/AddVolunteer';
-import Addenvent from '../pages/Addenvent';
-import {labelStyles} from '../styles/LabelStyle'
+import Envent from '../pages/Envent';
+import AddNewDay from '../pages/AddNewDay';
+import AddNewFocus from '../pages/AddNewFocus';
+import Timeing from '../pages/Timeing';
+import { labelStyles } from '../styles/LabelStyle';
 
 
 const Tab = createBottomTabNavigator();
@@ -18,73 +21,91 @@ const Stack = createStackNavigator();
 const Router = () => {
     return (
         <Tab.Navigator
-            initialRouteName="CoundownDay"
+            headerShown='true'
+            initialRouteName="Coundown Day"
             screenOptions={{
-                headerShown: true,
                 headerTitleAlign: 'center',
                 tabBarActiveTintColor: 'steelblue',
-                tabBarLabelStyle:{
+                tabBarLabelStyle: {
                     textAlign: 'center',
                     fontSize: 12,
                     marginBottom: 4,
                 },
-                tabBarStyle:{
+                tabBarStyle: {
                     height: 65,
                 },
             }}
-            
+
         >
-            <Tab.Screen name="CoundownDay" component={CoundownDay}
-                options={{ tabBarLabel: 'Coundown',
-                tabBarIcon:({ color }) => (
-                    <Image
-                        source={require('../resources/labelIcon/home.png')}
-                        style={[labelStyles.icon, {tintColor:color}]}
-                    />
-                ),
-                }}
-            >
-            </Tab.Screen>
-
-            <Tab.Screen name="SelfStudyRoom" component={SelfStudyRoom}
-                options={{ tabBarLabel: 'Self-Study',
-                tabBarIcon:({ color }) => (
-                    <Image
-                        source={require('../resources/labelIcon/alarm.png')}
-                        style={[labelStyles.icon, {tintColor:color}]}
-                    />
-                ),
-                }}
-            />
-
-            <Tab.Screen name="MoralEducation"
-                options={{ tabBarLabel: 'Statistics',
-                tabBarIcon:({ color }) => (
-                    <Image
-                        source={require('../resources/labelIcon/statistics.png')}
-                        style={[labelStyles.icon, {tintColor:color}]}
-                    />
-                ),
+            <Tab.Screen name="Coundown"
+                options={{
+                    tabBarLabel: 'Coundown', headerShown: false,
+                    tabBarIcon: ({ color }) => (
+                        <Image
+                            source={require('../resources/labelIcon/home.png')}
+                            style={[labelStyles.icon, { tintColor: color }]}
+                        />
+                    ),
                 }}
             >
                 {() => (
-                        <Stack.Navigator>
-                            <Stack.Screen name="Statistics" component={MoralEducationStatistics}  options={{ headerShown: false }}/>
-                            <Stack.Screen name="AddScore" component={AddScore}  options={{ headerShown: false }}/>
-                            <Stack.Screen name="AddVolunteer" component={AddVolunteer}  options={{ headerShown: false }}/>
-                            <Stack.Screen name="Addevent" component={Addenvent}  options={{ headerShown: false }}/>
-                        </Stack.Navigator>
+                    <Stack.Navigator>
+                        <Stack.Screen name="CoundownDay" component={CoundownDay} options={{ headerShown: true, headerTitleAlign: 'center' }} />
+                        <Stack.Screen name="AddNewDay" component={AddNewDay} />
+                    </Stack.Navigator>
                 )}
             </Tab.Screen>
 
-            <Tab.Screen name="PersonalCenter" component={PersonalCenter}
-                options={{ tabBarLabel: 'Center',
-                tabBarIcon:({ color }) => (
-                    <Image
-                        source={require('../resources/labelIcon/setting.png')}
-                        style={[labelStyles.icon, {tintColor:color}]}
-                    />
-                ),
+            <Tab.Screen name="Self-Study Room"
+                options={{
+                    tabBarLabel: 'Self-Study', headerShown: false,
+                    tabBarIcon: ({ color }) => (
+                        <Image
+                            source={require('../resources/labelIcon/alarm.png')}
+                            style={[labelStyles.icon, { tintColor: color }]}
+                        />
+                    ),
+                }}
+            >
+                {() => (
+                    <Stack.Navigator>
+                        <Stack.Screen name="SelfStudyRoom" component={SelfStudyRoom} options={{ headerShown: true, headerTitleAlign: 'center' }} />
+                        <Stack.Screen name="AddNewFocus" component={AddNewFocus} />
+                        <Stack.Screen name="Timeing" component={Timeing} />
+                    </Stack.Navigator>
+                )}
+            </Tab.Screen>
+
+            <Tab.Screen name="Statistics"
+                options={{
+                    tabBarLabel: 'Statistics', headerShown: false,
+                    tabBarIcon: ({ color }) => (
+                        <Image
+                            source={require('../resources/labelIcon/statistics.png')}
+                            style={[labelStyles.icon, { tintColor: color }]}
+                        />
+                    ),
+                }}
+            >
+                {() => (
+                    <Stack.Navigator>
+                        <Stack.Screen name="Moral Education Statistics" component={MoralEducationStatistics} options={{ headerShown: true, headerTitleAlign: 'center' }} />
+                        <Stack.Screen name="AddScore" component={AddScore} />
+                        <Stack.Screen name="AddVolunteer" component={AddVolunteer} />
+                        <Stack.Screen name="Event" component={Envent} />
+                    </Stack.Navigator>
+                )}
+            </Tab.Screen>
+
+            <Tab.Screen name="Personal Center" component={PersonalCenter}
+                options={{
+                    tabBarLabel: 'Center',
+                    tabBarIcon: ({ color }) => (
+                        <Image
+                            source={require('../resources/labelIcon/setting.png')}
+                            style={[labelStyles.icon, { tintColor: color }]}
+                        />
+                    ),
                 }}
             >
             </Tab.Screen>
