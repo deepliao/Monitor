@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button,ScrollView,FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, Button, ScrollView, FlatList, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { VictoryAxis, VictoryBar, VictoryChart } from 'victory-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PersonalCenter = () => {
+
+  const data = [
+    { date: "2/13", time: 7 },
+    { date: "2/14", time: 6 },
+    { date: "2/15", time: 4 },
+    { date: "2/16", time: 5 }
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.section}>
@@ -17,7 +26,21 @@ const PersonalCenter = () => {
       <View style={styles.section}>
         <Text style={styles.title}>Focus Duration</Text>
         <Text style={styles.hours}>20h</Text>
+        <Text style={{textAlign:'center'}}>DAILY FOCUS DURATION</Text>
       </View>
+
+      <View style={styles.chartStyle}>
+        <VictoryChart height={280}>
+          <VictoryBar
+            data={data}
+            style={{ data: { fill: '#447bfe' } }}
+            x='date'
+            y="time"
+            labels={({ datum }) => `${datum.time}h`} />
+          <VictoryAxis style={{ axis: { stroke: 'none' } }} />
+        </VictoryChart>
+      </View>
+
     </View>
   )
 }
@@ -47,29 +70,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
-  imageStyle: {
-    width: 30,
-    height: 30,
-  },
   hours: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10
   },
-  listItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  listItemText: {
-    fontSize: 16,
-  },
-  listItemDate: {
-    fontSize: 12,
-    color: '#666',
-  },
+  chartStyle: {
+    backgroundColor: '#ffffff'
+  }
 });

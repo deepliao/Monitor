@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Button, 
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'react-native-image-picker';
-import getDate from '../utils/getDate';
+import { getDate } from '../utils/getDate';
 
 const AddScore = () => {
   const scoreKey = 'score_data';
