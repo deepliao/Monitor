@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Button, 
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'react-native-image-picker';
-import getDate from '../utils/getDate';
+import {getDate} from '../utils/getDate';
 
 const AddVolunteer = () => {
   const scoreKey = 'score_data';
@@ -28,7 +28,6 @@ const AddVolunteer = () => {
       </TouchableOpacity>
     ),
   });
-
 
   // 打开图库，选择图片
   const handleChoosePhoto = async () => {
@@ -71,15 +70,16 @@ const AddVolunteer = () => {
       duration: duration,
       selectedImages: selectedImages,
     };
+
     try {
       const existingData = await AsyncStorage.getItem(scoreKey);
-      let newData = [];
+      let newData = {};
   
       if (existingData !== null) {
           newData = JSON.parse(existingData);
       }
-      newData.push(volunteerData);
-  
+      var newIndex = Object.keys(newData).length;
+      newData[newIndex] = volunteerData;
       await AsyncStorage.setItem(scoreKey, JSON.stringify(newData));
       alert('Score saved successfully!');
       navigation.goBack()
@@ -89,6 +89,9 @@ const AddVolunteer = () => {
   
   };
 
+  useEffect(() => {
+
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.formItem}>
@@ -106,6 +109,7 @@ const AddVolunteer = () => {
           style={styles.input}
           onChangeText={(text) => setduration(text)}
           value={duration}
+          keyboardType="numeric"
           placeholder="Enter Duration"
         />
       </View>

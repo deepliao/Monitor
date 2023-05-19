@@ -41,7 +41,8 @@ const AddNewFocus = () => {
             if (existingData !== null) {
                 newData = JSON.parse(existingData);
             }
-            newData.push(focusData);
+            var newIndex = Object.keys(newData).length;
+            newData[newIndex] = focusData;
             await AsyncStorage.setItem(durationKey, JSON.stringify(newData));
             alert('Add New Focus successfully!');
             navigation.goBack()

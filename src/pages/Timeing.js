@@ -1,14 +1,20 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect, CommonActions } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { AppState, StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { getDate } from '../utils/getDate';
 
 const Timing = ({ route }) => {
     const [data, setData] = useState(route.params.data);
+    const { today, month, day, dateStr } = getDate();
     const duration = data.duration;
+    const allFocus = 'focus_data';
     const past = data.past;
     const rest = data.rest;
     const navigation = useNavigation();
+    const [clac, setClac] = useState(true)
+    const [appState, setAppState] = useState(AppState.currentState);
 
     const [timeLeft, setTimeLeft] = useState(duration * 60 - past);
     const [isPaused, setIsPaused] = useState(false);
@@ -19,18 +25,66 @@ const Timing = ({ route }) => {
         title: 'Timing Page',
         headerTitleAlign: 'center',
         headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={{ paddingLeft: 15 }}>Pause</Text>
-            </TouchableOpacity>
+            isPaused ? (
+                <TouchableOpacity onPress={handleResume}>
+                    <Text style={{ paddingLeft: 15 }}>Pause</Text>
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity onPress={handlePause}>
+                    <Text style={{ paddingLeft: 15 }}>Pause</Text>
+                </TouchableOpacity>
+            )
+
         ),
         headerRight: () => (
-            <TouchableOpacity onPress={handleSaveScore}>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={{ paddingRight: 10 }}>Cancel</Text>
             </TouchableOpacity>
         ),
     });
 
-    const handleSaveScore = () => { };
+
+    const statistics = async () => {
+        const newfocus = {
+            date: dateStr,
+            data: duration
+        };
+        try {
+            const existingData = await AsyncStorage.getItem(allFocus);
+            let newData = [];
+            let mergeindex = -1;
+            var newIndex = -1
+            if (existingData) {
+                newIndex = Object.keys(existingData).length;
+            } else {
+                newIndex = 0
+            }
+            if (newIndex == 0) {
+                // 第一次为空
+                newData.push(newfocus);
+            } else {
+                // 不为空
+                newData = JSON.parse(existingData);
+                for (const [index, value] of Object.entries(newData)) {
+                    console.log(value.date, dateStr, "++++")
+                    if (value.date === dateStr) {
+                        mergeindex = index
+                    }
+                }
+                console.log(mergeindex)
+                if (mergeindex === -1) {
+                    // 不存在新数据
+                    newData.push(newfocus);
+                } else {
+                    newData[mergeindex].data = JSON.stringify(parseFloat(duration) + parseFloat(newData[mergeindex].data));
+                }
+            }
+            await AsyncStorage.setItem(allFocus, JSON.stringify(newData))
+            setClac(false)
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     useEffect(() => {
         if (timeLeft > 0 && !isPaused) {
@@ -44,6 +98,9 @@ const Timing = ({ route }) => {
             }, 1000);
         } else {
             clearInterval(timerRef.current);
+            if (timeLeft === 0 && clac) {
+                statistics()
+            }
         }
         return () => clearInterval(timerRef.current);
     }, [timeLeft, isPaused]);
@@ -59,6 +116,27 @@ const Timing = ({ route }) => {
             setFill(progress);
         }
     }, [timeLeft]);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                handlePause();
+            };
+        }, [])
+    );
+    useEffect(() => {
+        const handleAppStateChange = (nextAppState) => {
+            if (
+                appState.match(/active/) &&
+                nextAppState.match(/inactive|background/)
+            ) {
+                handlePause();
+            }
+            setAppState(nextAppState);
+        };
+
+        AppState.addEventListener('change', handleAppStateChange);
+    }, [appState]);
 
     const handlePause = () => {
         setIsPaused(true);
@@ -111,6 +189,15 @@ const Timing = ({ route }) => {
                     <Text style={styles.buttonText}>REMAINING</Text>
                 </View>
             </View>
+            <View style={styles.buttonsContainer}>
+                <View style={styles.button}>
+                    <Button title=' PAUSE ' onPress={handlePause} />
+
+                </View>
+                <View style={styles.button}>
+                    <Button title=' RESUME' onPress={handleResume} />
+                </View>
+            </View>
         </View>
     );
 };
@@ -138,8 +225,8 @@ const styles = StyleSheet.create({
     progressText: {
         fontSize: 24,
         marginTop: 8,
-        textAlign:'center',
-        fontWeight:'bold'
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
     buttonsContainer: {
         flexDirection: 'row',

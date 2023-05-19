@@ -16,42 +16,46 @@ const AddNewDay = () => {
     const [open, setOpen] = useState(false)
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Add New Day',
-        headerTitleAlign: 'center',
-        headerLeft: () => (
-            <TouchableOpacity onPress={() => navigation.navigate('CoundownDay')}>
-                <Text style={{ paddingLeft: 15 }}>Return</Text>
-            </TouchableOpacity>
-        ),
-        headerRight: () => (
-            <TouchableOpacity onPress={handleSaveScore}>
-                <Text style={{ paddingRight: 10 }}>Save</Text>
-            </TouchableOpacity>
-        ),
-    });
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Add New Day',
+            headerTitleAlign: 'center',
+            headerLeft: () => (
+                <TouchableOpacity onPress={() => navigation.navigate('CoundownDay')}>
+                    <Text style={{ paddingLeft: 15 }}>Return</Text>
+                </TouchableOpacity>
+            ),
+            headerRight: () => (
+                <TouchableOpacity onPress={handleSaveScore}>
+                    <Text style={{ paddingRight: 10 }}>Save</Text>
+                </TouchableOpacity>
+            ),
+        });
+    })
 
     const handleSaveScore = async () => {
         const dayData = {
-          eventName: eventName,
-          date:date
+            eventName: eventName,
+            date: date
         };
         try {
-          const existingData = await AsyncStorage.getItem(dayKey);
-          let newData = [];
-      
-          if (existingData !== null) {
-              newData = JSON.parse(existingData);
-          }
-          newData.push(dayData);
-          await AsyncStorage.setItem(dayKey, JSON.stringify(newData));
-          alert('Add New Day successfully!');
-          navigation.goBack()
+            const existingData = await AsyncStorage.getItem(dayKey);
+            let newData = {};
+
+            if (existingData !== null) {
+                newData = JSON.parse(existingData);
+            } 
+            var newIndex = Object.keys(newData).length;
+            newData[newIndex] = dayData;
+            await AsyncStorage.setItem(dayKey, JSON.stringify(newData));
+            alert('Add New Day successfully!');
+            navigation.goBack()
         } catch (e) {
-          console.log(e);
+            console.log(e);
         }
-      };
+    };
+
 
     return (
         <View style={styles.container}>

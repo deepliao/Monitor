@@ -14,23 +14,6 @@ const AddScore = () => {
   const [selectedImages, setselectedImages] = useState([]);
   const navigation = useNavigation();
 
-  navigation.setOptions({
-    headerShown: true,
-    title: 'Add Moral Score',
-    headerTitleAlign: 'center',
-    headerLeft: () => (
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={{ paddingLeft: 15 }}>Return</Text>
-      </TouchableOpacity>
-    ),
-    headerRight: () => (
-      <TouchableOpacity onPress={handleSaveScore} style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ paddingRight: 10 }}>Complete</Text>
-      </TouchableOpacity>
-    ),
-  });
-
-
   // 打开图库，选择图片
   const handleChoosePhoto = async () => {
     const options = {
@@ -60,7 +43,7 @@ const AddScore = () => {
 
 
   const handleSaveScore = async () => {
-    const {today,month,day} = getDate();
+    const { today, month, day } = getDate();
     // 存储数据
     const scoreData = {
       today: today,
@@ -75,14 +58,15 @@ const AddScore = () => {
     try {
       // 获取现有的分数数据
       const existingData = await AsyncStorage.getItem(scoreKey);
-      let newData = [];
-  
+      let newData = {};
+
       // 如果数据已经存在，将其解析为数组，然后添加新的得分数据
       if (existingData !== null) {
-          newData = JSON.parse(existingData);
+        newData = JSON.parse(existingData);
       }
-      newData.push(scoreData);
-  
+      var newIndex = Object.keys(newData).length;
+      newData[newIndex] = scoreData;
+
       // 将新的得分数据存储到AsyncStorage中
       await AsyncStorage.setItem(scoreKey, JSON.stringify(newData));
       alert('Score saved successfully!');
@@ -90,9 +74,26 @@ const AddScore = () => {
     } catch (e) {
       console.log(e);
     }
-  
-  };
 
+  };
+  navigation.setOptions({
+    headerShown: true,
+    title: 'Add Moral Score',
+    headerTitleAlign: 'center',
+    headerLeft: () => (
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Text style={{ paddingLeft: 15 }}>Return</Text>
+      </TouchableOpacity>
+    ),
+    headerRight: () => (
+      <TouchableOpacity onPress={handleSaveScore} style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ paddingRight: 10 }}>Complete</Text>
+      </TouchableOpacity>
+    ),
+  });
+
+  useEffect(() => {
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.formItem}>
